@@ -1,0 +1,62 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.4'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id "org.sonarqube" version "3.3"
+	id "jacoco"
+}
+
+group = 'com.bms'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+testImplementation('junit:junit:4.13')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.hibernate', name: 'hibernate-validator', version: '8.0.0.Alpha2'
+    implementation("org.springdoc:springdoc-openapi-ui:1.4.6")
+	
+}
+
+tasks.named('sonarqube').configure{
+dependsOn test
+}
+
+tasks.named('test') {
+useJUnitPlatform()
+}
+
+jacocoTestReport{
+reports{
+xml.enabled true
+html.enabled true
+xml.destination file("${buildDir}/reports/jacoco.xml")
+}
+}
+
+sonarqube {
+    properties {
+    	property 'sonar.java.plugin', 'jacoco'
+		property 'sonar.test', 'src/test'
+		property "sonar.scm.disabled", "True"
+		property 'sonar.java.test.binaries', 'build/classes/java/test'
+		property 'sonar.host.url', 'http://localhost:9000'
+		property "sonar.coverage.jacoco.xmlReportPath", "${buildDir}/reports/jacoco.xml"
+		property 'sonar.login','admin'
+		property 'sonar.password','Ganesh@123'
+		property 'sonar.exclusions' ,'**/models/**,**/config/**,**/AppSecurityConfig.java,**/AuthServerApplication.java'
+    }
+}
